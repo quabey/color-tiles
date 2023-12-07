@@ -1,5 +1,7 @@
 <script>
 	import { onMount } from "svelte";
+	import { supabase } from "./supabase.js";
+
 	let grid = [];
 	let found = false;
 	const colors = [

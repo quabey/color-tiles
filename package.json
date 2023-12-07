@@ -17,5 +17,8 @@
     "svelte": "^4.2.3",
     "tailwindcss": "^3.3.2",
     "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
   }
 }
