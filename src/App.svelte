@@ -4,6 +4,6 @@
 </script>
 
 <div class="h-screen w-screen">
-	<Header />
+	<Header/>
 	<Game />
 </div>

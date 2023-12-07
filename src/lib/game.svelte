@@ -108,6 +108,9 @@
 	});
 
 	function handleTileClick(row, col) {
+		//  Dont start untill user clicks play
+		// if (isPaused) return 
+
 		console.log(row, col);
 		let color = getColorAt(row, col);
 		console.log(color);
@@ -266,6 +269,7 @@
 		{#each grid as row, rowIndex}
 			{#each row as cell, colIndex}
 				<button
+				disabled='{isPaused}'
 					class="cell"
 					style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 						cell || "transparent"
