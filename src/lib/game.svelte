@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 	import { supabase } from "./supabase.js";
 
+	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
 	let grid = [];
 	let found = false;
 	const colors = [
@@ -17,6 +18,7 @@
 		"black",
 	];
 
+	let isPaused = true;
 
 	function initializeGrid() {
 		// Total number of tiles
@@ -87,16 +89,18 @@
 		);
 	}
 
-    function playSound(sound) {
-        switch (sound) {
-            case "success":
-                let successSound = new Audio("https://cdn.freesound.org/previews/702/702806_6142149-lq.mp3");
-                successSound.play();
-                break;
-            default:
-                break;
-        }
-    }
+	function playSound(sound) {
+		switch (sound) {
+			case "success":
+				let successSound = new Audio(
+					"https://cdn.freesound.org/previews/702/702806_6142149-lq.mp3",
+				);
+				successSound.play();
+				break;
+			default:
+				break;
+		}
+	}
 
 	onMount(() => {
 		window.addEventListener("resize", resizeGrid);
@@ -105,22 +109,22 @@
 
 	function handleTileClick(row, col) {
 		console.log(row, col);
-        let color = getColorAt(row, col);
-        console.log(color);
-        if (color != "transparent") {
-            return;
-        }
-        let up = checkColor(row, col, "up");
-        let down = checkColor(row, col, "down");
-        let left = checkColor(row, col, "left");
-        let right = checkColor(row, col, "right");
-        console.log(up, down, left, right);
-        checkAndClear(up, down);
-        checkAndClear(left, right);
-        checkAndClear(up, left);
-        checkAndClear(up, right);
-        checkAndClear(down, left);
-        checkAndClear(down, right);
+		let color = getColorAt(row, col);
+		console.log(color);
+		if (color != "transparent") {
+			return;
+		}
+		let up = checkColor(row, col, "up");
+		let down = checkColor(row, col, "down");
+		let left = checkColor(row, col, "left");
+		let right = checkColor(row, col, "right");
+		console.log(up, down, left, right);
+		checkAndClear(up, down);
+		checkAndClear(left, right);
+		checkAndClear(up, left);
+		checkAndClear(up, right);
+		checkAndClear(down, left);
+		checkAndClear(down, right);
 		if (found) {
 			playSound("success");
 			found = false;
@@ -128,19 +132,19 @@
 		}
 	}
 
-    function checkAndClear(color1, color2) {
-	if (color1 == false || color2 == undefined) {
+	function checkAndClear(color1, color2) {
+		if (color1 == false || color2 == undefined) {
+			return false;
+		}
+		if (color1.color === color2.color) {
+			console.log(`${color1.color} and ${color2.color} match`);
+			grid[color1.row][color1.col] = "transparent";
+			grid[color2.row][color2.col] = "transparent";
+			found = true;
+			return true;
+		}
 		return false;
 	}
-    if (color1.color === color2.color) {
-        console.log(`${color1.color} and ${color2.color} match`);
-        grid[color1.row][color1.col] = "transparent";
-        grid[color2.row][color2.col] = "transparent";
-		found = true;
-		return true;
-    }
-	return false;
-}
 
 	function getColorAt(row, col) {
 		if (
@@ -165,8 +169,6 @@
 			}
 		}
 		return true;
-
-
 	}
 
 	function removeSingles() {
@@ -195,66 +197,85 @@
 		}
 	}
 
-    function checkColor(row, col, direction) {
-        switch (direction) {
-            case "up":
-                let upColor = getColorAt(row - 1, col);
-                if (upColor != null && upColor != "transparent") {
-                    return {row: row - 1, col: col, color: upColor};
-                } else if (upColor == null){
-                    return false;
-                } else {
-                    return checkColor(row - 1, col, direction);
-                }
-            case "down":
-                let downColor = getColorAt(row + 1, col);
-                if (downColor != null && downColor != "transparent") {
-                    return {row: row + 1, col: col, color: downColor};
-                } else if (downColor == null){
-                    return false;
-                } else {
-                    return checkColor(row + 1, col, direction);
-                }
-            case "left":
-                let leftColor = getColorAt(row, col - 1);
-                if (leftColor != null && leftColor != "transparent") {
-                    return {row: row, col: col - 1, color: leftColor};
-                } else if (leftColor == null){
-                    return false;
-                } else {
-                    return checkColor(row, col - 1, direction);
-                }
-            case "right":
-                let rightColor = getColorAt(row, col + 1);
-                if (rightColor != null && rightColor != "transparent") {
-                    return {row: row, col: col + 1, color: rightColor};
-                } else if (rightColor == null){
-                    return false;
-                } else {
-                    return checkColor(row, col + 1, direction);
-                }
-            default:
-                return false;
-        }
-    }
+	function checkColor(row, col, direction) {
+		switch (direction) {
+			case "up":
+				let upColor = getColorAt(row - 1, col);
+				if (upColor != null && upColor != "transparent") {
+					return { row: row - 1, col: col, color: upColor };
+				} else if (upColor == null) {
+					return false;
+				} else {
+					return checkColor(row - 1, col, direction);
+				}
+			case "down":
+				let downColor = getColorAt(row + 1, col);
+				if (downColor != null && downColor != "transparent") {
+					return { row: row + 1, col: col, color: downColor };
+				} else if (downColor == null) {
+					return false;
+				} else {
+					return checkColor(row + 1, col, direction);
+				}
+			case "left":
+				let leftColor = getColorAt(row, col - 1);
+				if (leftColor != null && leftColor != "transparent") {
+					return { row: row, col: col - 1, color: leftColor };
+				} else if (leftColor == null) {
+					return false;
+				} else {
+					return checkColor(row, col - 1, direction);
+				}
+			case "right":
+				let rightColor = getColorAt(row, col + 1);
+				if (rightColor != null && rightColor != "transparent") {
+					return { row: row, col: col + 1, color: rightColor };
+				} else if (rightColor == null) {
+					return false;
+				} else {
+					return checkColor(row, col + 1, direction);
+				}
+			default:
+				return false;
+		}
+	}
 </script>
 
-<div
-	class="gamegrid"
-	style={`width: ${23 * cellSize + 22}px; height: ${15 * cellSize + 14}px;`}
->
-	{#each grid as row, rowIndex}
-		{#each row as cell, colIndex}
-			<button
-				class="cell"
-				style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
-					cell || "transparent"
-				};`}
-				on:click={() => handleTileClick(rowIndex, colIndex)}
+<div class="relative">
+	{#if isPaused}
+		<Button
+			class="flex items-center space-x-3 rtl:space-x-reverse absolute z-10"
+			style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
+			on:click={() => (isPaused = !isPaused)}
+		>
+			<span
+				class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+				>Play!</span
 			>
-			</button>
+		</Button>
+	{/if}
+
+	<div
+		class={isPaused
+			? "gamegrid relative blur-sm"
+			: "gamegrid relative"}
+		style={`width: ${23 * cellSize + 22}px; height: ${
+			15 * cellSize + 14
+		}px;`}
+	>
+		{#each grid as row, rowIndex}
+			{#each row as cell, colIndex}
+				<button
+					class="cell"
+					style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
+						cell || "transparent"
+					};`}
+					on:click={() => handleTileClick(rowIndex, colIndex)}
+				>
+				</button>
+			{/each}
 		{/each}
-	{/each}
+	</div>
 </div>
 
 <style>
@@ -263,7 +284,7 @@
 		grid-template-columns: repeat(23, 1fr);
 		grid-row-gap: 1px;
 		grid-column-gap: 1px;
-		margin: auto; 
+		margin: auto;
 	}
 
 	.cell {
