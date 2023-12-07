@@ -122,6 +122,7 @@
 		if (found) {
 			playSound("success");
 			found = false;
+			checkWin();
 		}
 	}
 
@@ -150,6 +151,46 @@
 			return null;
 		}
 		return grid[row][col];
+	}
+
+	function checkWin() {
+		removeSingles();
+		for (let row of grid) {
+			for (let cell of row) {
+				if (cell !== "transparent") {
+					return false;
+				}
+			}
+		}
+		return true;
+
+
+	}
+
+	function removeSingles() {
+		let colorCounts = {};
+		for (let row of grid) {
+			for (let cell of row) {
+				if (cell !== "transparent") {
+					if (colorCounts[cell]) {
+						colorCounts[cell]++;
+					} else {
+						colorCounts[cell] = 1;
+					}
+				}
+			}
+		}
+		for (let color in colorCounts) {
+			if (colorCounts[color] === 1) {
+				for (let row of grid) {
+					for (let cell of row) {
+						if (cell === color) {
+							cell = "transparent";
+						}
+					}
+				}
+			}
+		}
 	}
 
     function checkColor(row, col, direction) {
