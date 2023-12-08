@@ -45,7 +45,7 @@
 
 				<Dropdown triggeredBy="#avatar_menu">
 					<div slot="header" class="px-4 py-2">
-						{#if $authState.user == null}
+						{#if $authState.user != null}
 							<span
 								class="block text-sm text-gray-900 dark:text-white"
 								>{$username != "" ? $username : ""}</span
