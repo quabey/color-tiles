@@ -5,6 +5,7 @@
 	import { onMount } from "svelte";
 	import { authState, loggedIn } from "./lib/store/authState";
 	import { onLogin, onLoggout } from "./lib/supabase.js";
+	import toast, { Toaster } from 'svelte-french-toast';
 
 	onMount(() => {
 		supabase.auth.onAuthStateChange((event, session) => {
@@ -14,6 +15,7 @@
 				try {
 					onLogin();
 				} catch (error) {
+					toast.error("Something went wrong!")
 					console.log(error);
 				}
 			}
@@ -27,6 +29,7 @@
 </script>
 
 <div class="h-screen w-screen">
+	<Toaster />
 	<div class="z-[1000000] relative">
 		<Header/>
 	</div>
