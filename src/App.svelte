@@ -27,6 +27,8 @@
 </script>
 
 <div class="h-screen w-screen">
-	<Header/>
+	<div class="z-[1000000] relative">
+		<Header/>
+	</div>
 	<Game />
 </div>
