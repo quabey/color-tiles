@@ -66,9 +66,12 @@
 			{/each}
 		{/each}
 	</div>
-	<p class="max-w-xs">
-		Game State: Score: {$gameState.score} , Number of moves: {$gameState.numberOfMoves}
-	</p>
+
+	<div class="absolute left-0 top-0">
+		<p class="">
+			Game State: Score: {$gameState.score} , Number of moves: {$gameState.numberOfMoves}
+		</p>
+	</div>
 </div>
 
 <style>

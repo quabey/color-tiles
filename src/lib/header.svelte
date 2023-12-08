@@ -77,7 +77,7 @@
 						<Avatar src={user.user_metadata.picture} class="me-2" />
 						{user.user_metadata.full_name}
 					</Button>
-					<Dropdown inline triggeredBy="#avatar_menu">
+					<Dropdown triggeredBy="#avatar_menu">
 						<div slot="header" class="px-4 py-2">
 							<span
 								class="block text-sm text-gray-900 dark:text-white"
