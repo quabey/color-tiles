@@ -47,7 +47,7 @@
 	{/if}
 
 	<div
-		class={isPaused ? "gamegrid relative blur-sm" : "gamegrid relative"}
+		class={isPaused ? "gamegrid relative blur-sm p-5" : "gamegrid relative p-5"}
 		style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
 		}px;`}
@@ -66,7 +66,7 @@
 			{/each}
 		{/each}
 	</div>
-	<p>
+	<p class="max-w-xs">
 		Game State: Score: {$gameState.score} , Number of moves: {$gameState.numberOfMoves}
 	</p>
 </div>
