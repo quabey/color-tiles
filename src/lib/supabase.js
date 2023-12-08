@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { authState, loggedIn, profileImg, getProfileImg, username, email } from "./store/authState";
 import { get } from "svelte/store";
+import toast from 'svelte-french-toast';
 
 export const supabase = createClient(
 	"https://xtluwutnmmpqayjulquy.supabase.co",
@@ -17,6 +18,7 @@ export const getLeaderboard = async () => {
 }
 
 export const onLogin = async () => {
+	toast.success("Logged in");
 	loggedIn.set(true);
 	const { data, error } = await supabase.auth.getUser();
 	authState.set({ user: data.user, session: await supabase.auth.getSession() });
@@ -27,6 +29,7 @@ export const onLogin = async () => {
 }
 
 export const onLoggout = async () => {
+	toast.success("Logged out");
 	loggedIn.set(false);
 	authState.set({ user: null, session: null });
 	profileImg.set("");

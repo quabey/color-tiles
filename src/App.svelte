@@ -11,7 +11,6 @@
 		supabase.auth.onAuthStateChange((event, session) => {
 			if (event === 'SIGNED_IN' && !$loggedIn) {
 				$loggedIn = true;
-				toast.success("Logged in");
 				console.log('logged in');
 				try {
 					onLogin();
@@ -22,7 +21,6 @@
 			}
 			if (event === 'SIGNED_OUT') {
 				$loggedIn = false;
-				toast.success("Logged out");
 				console.log('Logged out');
 				onLoggout();
 			}
