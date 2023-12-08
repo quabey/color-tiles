@@ -39,7 +39,7 @@
 						class="me-2"
 					/>
                     <Label defaultClass="text-lg" >
-					{$username != "" ? $username : "👋"}
+					{$username != "" ? $username : "Login 👋"}
                 </Label>
 				</Button>
 

@@ -3,11 +3,13 @@ import { writable, get } from "svelte/store";
 const GameState = writable({
 	grid: [],
 	score: 0,
+	comboMultiplier: 1,
 	gameOver: false,
 	gameWon: false,
 	numberOfMoves: 0,
 	metadata: {
-		found: false,
+		found: 0,
+		traveledDistance: 0,
 		timer: 0,
 	},
 });
@@ -112,10 +114,10 @@ export function handleTileClick(row, col) {
 	if (color != "transparent") {
 		return;
 	}
-	let up = checkColor(row, col, "up");
-	let down = checkColor(row, col, "down");
-	let left = checkColor(row, col, "left");
-	let right = checkColor(row, col, "right");
+	let up = checkColor(row, col, "up", 0);
+	let down = checkColor(row, col, "down", 0);
+	let left = checkColor(row, col, "left", 0);
+	let right = checkColor(row, col, "right", 0);
 	console.log(up, down, left, right);
 	checkAndClear(up, down);
 	checkAndClear(left, right);
@@ -124,12 +126,14 @@ export function handleTileClick(row, col) {
 	checkAndClear(down, left);
 	checkAndClear(down, right);
 	let gameState = get(GameState);
-	if (gameState.metadata.found) {
+	calcComboMultiplier(gameState.metadata.found);
+	calcScore(gameState.metadata.traveledDistance);
+	if (gameState.metadata.found >= 1) {
 		playSound("success");
-
+		console.log(gameState.metadata.found);
 		// gameState.metadata.found = false;
 		GameState.update((state) => {
-			state.metadata.found = false;
+			state.metadata.found = 0;
 			return state;
 		});
 		checkWin();
@@ -143,21 +147,56 @@ function checkAndClear(color1, color2) {
 	}
 	if (color1.color === color2.color) {
 		console.log(`${color1.color} and ${color2.color} match`);
-		gameState.grid[color1.row][color1.col] = "transparent";
-		gameState.grid[color2.row][color2.col] = "transparent";
 
-		// The game score is increased by 10 points for each pair of tiles removed.
+		if ((gameState.grid[color1.row][color1.col] != "transparent")) {
+			gameState.grid[color1.row][color1.col] = "transparent";
+			gameState.metadata.found += 1;
+			gameState.metadata.traveledDistance += color1.traveled;
+		}
+		if ((gameState.grid[color2.row][color2.col] != "transparent")) {
+			gameState.grid[color2.row][color2.col] = "transparent";
+			gameState.metadata.found += 1;
+			gameState.metadata.traveledDistance += color2.traveled;
+		}	
+
 		GameState.update((state) => {
 			state.grid = gameState.grid;
-			state.score += 10;
 			state.numberOfMoves += 1;
-			state.metadata.found = true;
 			return state;
 		});
 
 		return true;
 	}
 	return false;
+}
+
+
+function calcScore(combinedDistance) {
+	let multiplier = get(GameState).comboMultiplier;
+	let score = get(GameState).score;
+	console.log("old score: ", score);
+	console.log("multiplier: ", multiplier);
+	console.log("combinedDistance: ", combinedDistance);
+	GameState.update((state) => {
+		state.score = score + multiplier * combinedDistance;
+		state.metadata.traveledDistance = 0;
+		return state;
+	});
+}
+
+function calcComboMultiplier(removed) {
+	let current = get(GameState).comboMultiplier;
+	if (removed <= 2) {
+		GameState.update((state) => {
+			state.comboMultiplier = 1;
+			return state;
+		});
+	} else {
+		GameState.update((state) => {
+			state.comboMultiplier = current + (removed - 2);
+			return state;
+		});
+	}
 }
 
 function getColorAt(row, col) {
@@ -215,43 +254,44 @@ function removeSingles() {
 	}
 }
 
-function checkColor(row, col, direction) {
+function checkColor(row, col, direction, traveled) {
+	traveled++;
 	switch (direction) {
 		case "up":
 			let upColor = getColorAt(row - 1, col);
 			if (upColor != null && upColor != "transparent") {
-				return { row: row - 1, col: col, color: upColor };
+				return { row: row - 1, col: col, color: upColor, traveled };
 			} else if (upColor == null) {
 				return false;
 			} else {
-				return checkColor(row - 1, col, direction);
+				return checkColor(row - 1, col, direction, traveled);
 			}
 		case "down":
 			let downColor = getColorAt(row + 1, col);
 			if (downColor != null && downColor != "transparent") {
-				return { row: row + 1, col: col, color: downColor };
+				return { row: row + 1, col: col, color: downColor, traveled };
 			} else if (downColor == null) {
 				return false;
 			} else {
-				return checkColor(row + 1, col, direction);
+				return checkColor(row + 1, col, direction, traveled);
 			}
 		case "left":
 			let leftColor = getColorAt(row, col - 1);
 			if (leftColor != null && leftColor != "transparent") {
-				return { row: row, col: col - 1, color: leftColor };
+				return { row: row, col: col - 1, color: leftColor, traveled };
 			} else if (leftColor == null) {
 				return false;
 			} else {
-				return checkColor(row, col - 1, direction);
+				return checkColor(row, col - 1, direction, traveled);
 			}
 		case "right":
 			let rightColor = getColorAt(row, col + 1);
 			if (rightColor != null && rightColor != "transparent") {
-				return { row: row, col: col + 1, color: rightColor };
+				return { row: row, col: col + 1, color: rightColor, traveled };
 			} else if (rightColor == null) {
 				return false;
 			} else {
-				return checkColor(row, col + 1, direction);
+				return checkColor(row, col + 1, direction, traveled);
 			}
 		default:
 			return false;
