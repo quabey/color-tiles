@@ -56,7 +56,7 @@
 			{#each row as cell, colIndex}
 				<button
 					disabled={isPaused}
-					class="cell"
+					class="cell rounded-lg"
 					style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 						cell || "transparent"
 					};`}
@@ -78,8 +78,8 @@
 	.gamegrid {
 		display: grid;
 		grid-template-columns: repeat(23, 1fr);
-		grid-row-gap: 1px;
-		grid-column-gap: 1px;
+		grid-row-gap: 4px;
+		grid-column-gap: 4px;
 		margin: auto;
 	}
 

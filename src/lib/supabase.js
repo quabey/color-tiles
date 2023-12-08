@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import { authState, loggedIn, profileImg, getProfileImg, username, email } from "./store/authState";
+import { get } from "svelte/store";
 
 export const supabase = createClient(
 	"https://xtluwutnmmpqayjulquy.supabase.co",
@@ -12,4 +14,22 @@ export const getLeaderboard = async () => {
 		return [];
 	}
 	return data;
+}
+
+export const onLogin = async () => {
+	loggedIn.set(true);
+	const { data, error } = await supabase.auth.getUser();
+	authState.set({ user: data.user, session: await supabase.auth.getSession() });
+	profileImg.set(getProfileImg());
+	username.set(get(authState).user.user_metadata.full_name);
+	email.set(get(authState).user.email);
+	console.log(get(authState));
+}
+
+export const onLoggout = async () => {
+	loggedIn.set(false);
+	authState.set({ user: null, session: null });
+	profileImg.set("");
+	username.set("");
+	email.set("");
 }

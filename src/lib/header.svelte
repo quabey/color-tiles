@@ -11,30 +11,11 @@
 	import Auth from "./Auth.svelte";
 	import LeaderBoard from "./leaderboard.svelte";
 	import { supabase } from "./supabase";
+	import { username, profileImg, email, authState } from "./store/authState";
+	import { get } from "svelte/store";
+
 	let authModal = false;
 	let leaderboardModal = false;
-	let user;
-	supabase.auth.onAuthStateChange((event, session) => {
-		if (event === "INITIAL_SESSION") {
-			console.log("Welcome to Colour-Tile!");
-			console.log("Auth Status:", session.user);
-			// TODO: New user onboarding walk through?
-
-			// TODO: New user check using session.user
-		} else {
-			user = null;
-		}
-		if (event === "SIGNED_IN") {
-			user = session.user;
-			console.log("You are now Authed - Auth Status:", user.id);
-		} else {
-			user = null;
-		}
-		if (event === "SIGNED_OUT") {
-			let user = null;
-			console.log("You are now logged out - Auth Status:", user);
-		}
-	});
 </script>
 
 <nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
@@ -54,23 +35,23 @@
 			>
 				<Button pill color="light" id="avatar_menu" class="!p-1">
 					<Avatar
-						src={user?.user_metadata.picture ?? ""}
+						src={$profileImg}
 						class="me-2"
 					/>
                     <Label defaultClass="text-lg" >
-					{user?.user_metadata.full_name ?? "👋"}
+					{$username != "" ? $username : "👋"}
                 </Label>
 				</Button>
 
 				<Dropdown triggeredBy="#avatar_menu">
 					<div slot="header" class="px-4 py-2">
-						{#if user == null}
+						{#if $authState.user == null}
 							<span
 								class="block text-sm text-gray-900 dark:text-white"
-								>{user?.user_metadata.full_name ?? ""}</span
+								>{$username != "" ? $username : ""}</span
 							>
 							<span class="block truncate text-sm font-medium"
-								>{user?.user_metadata.email ?? ""}</span
+								>{$email}</span
 							>
 						{/if}
 					</div>
@@ -79,7 +60,7 @@
 					>
 					<DropdownItem>Solve</DropdownItem>
 					<DropdownItem>Restart</DropdownItem>
-					{#if user == null}
+					{#if $authState.user == null}
 						<DropdownItem
 							slot="footer"
 							on:click={() => (authModal = true)}
@@ -94,8 +75,6 @@
 						>
 					{/if}
 				</Dropdown>
-
-				<!-- {/if} -->
 			</ul>
 		</div>
 	</div>
