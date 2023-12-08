@@ -47,7 +47,7 @@
 	{/if}
 
 	<div
-		class={isPaused ? "gamegrid relative blur-sm p-5" : "gamegrid relative p-5"}
+		class={isPaused ? "gamegrid relative blur-sm p-5 pt-8" : "gamegrid relative p-5 pt-8"}
 		style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
 		}px;`}
