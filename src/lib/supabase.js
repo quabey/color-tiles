@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { authState, loggedIn, profileImg, getProfileImg, username, email } from "./store/authState";
+import { authState, loggedIn, profileImg, getProfileImg, username, email, userID } from "./store/authState";
 import { get } from "svelte/store";
 import toast from 'svelte-french-toast';
 
@@ -17,6 +17,15 @@ export const getLeaderboard = async () => {
 	return data;
 }
 
+export const getStats = async () => {
+	const { data, error } = await supabase.from("color_profiles").select("timed_highscore, timed_completionTime, timed_gamesPlayed, timed_gamesCompleted").eq("username", get(authState).user.user_metadata.full_name);
+	if (error) {
+		console.log(error);
+		return [];
+	}
+	return data;
+}
+
 export const onLogin = async () => {
 	toast.success("Logged in");
 	loggedIn.set(true);
@@ -25,6 +34,7 @@ export const onLogin = async () => {
 	profileImg.set(getProfileImg());
 	username.set(get(authState).user.user_metadata.full_name);
 	email.set(get(authState).user.email);
+	userID.set(get(authState).user.id);
 	console.log(get(authState));
 }
 
@@ -35,4 +45,5 @@ export const onLoggout = async () => {
 	profileImg.set("");
 	username.set("");
 	email.set("");
+	userID.set("");
 }

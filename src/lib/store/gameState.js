@@ -13,6 +13,9 @@ const GameState = writable({
 		timer: 0,
 	},
 });
+
+export const isPaused = writable(true);
+
 // Initialize the colours
 export const colors = [
 	"red",
@@ -155,9 +158,12 @@ export function handleTileClick(row, col) {
 		// gameState.metadata.found = false;
 		GameState.update((state) => {
 			state.metadata.found = 0;
+			if (checkWin()) {
+				state.gameWon = true;
+			}
 			return state;
 		});
-		checkWin();
+		
 	}
 }
 

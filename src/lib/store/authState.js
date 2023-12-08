@@ -8,6 +8,7 @@ export const authState = writable({
 export const username = writable("");
 export const profileImg = writable("");
 export const email = writable("");
+export const userID = writable("");
 
 export const loggedIn = writable(false);
 

@@ -1,14 +1,15 @@
 <script>
 	import { onMount } from "svelte";
+	import NewGame from "./newGame.svelte";
 	import { supabase } from "./supabase.js";
-	import { initGameState, handleTileClick, getGrid } from "./store/gameState";
+	import { initGameState, handleTileClick, getGrid, isPaused } from "./store/gameState";
 	import { get } from "svelte/store";
 
 	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
 
-	let isPaused = true;
 	let cellSize = 0;
-	
+	let currentHover = { row: null, col: null };
+
 	let gameState = initGameState();
 
 	function resizeGrid() {
@@ -32,37 +33,35 @@
 
 </script>
 
-<div class="relative">
-	{#if isPaused}
-		<Button
-			class="flex items-center space-x-3 rtl:space-x-reverse absolute z-10"
-			style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
-			on:click={() => (isPaused = !isPaused)}
-		>
-			<span
-				class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-				>Play!</span
-			>
-		</Button>
-	{/if}
+<Modal bind:open={$isPaused} dismissable={false}>
+	<NewGame />
+</Modal>
 
+<div class="relative z-0">
 	<div
-		class={isPaused ? "gamegrid relative blur-sm p-5 pt-8" : "gamegrid relative p-5 pt-8"}
+		class={$isPaused ? "gamegrid relative blur-sm p-5 pt-8" : "gamegrid relative p-5 pt-8"}
 		style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
 		}px;`}
 	>
 		{#each $gameState.grid as row, rowIndex}
 			{#each row as cell, colIndex}
-				<button
-					disabled={isPaused}
-					class="cell rounded-lg drop-shadow-xl"
+				<div class:highlighted={colIndex == currentHover.col || rowIndex == currentHover.row}>
+					<button
+					disabled={$isPaused}
+					class="cell rounded-lg drop-shadow-xl mx-[3px]"
 					style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 						cell || "transparent"
 					};`}
 					on:click={() => handleTileClick(rowIndex, colIndex)}
+					on:mouseenter={() => {
+						currentHover = { row: rowIndex, col: colIndex };
+						console.log(currentHover);
+							
+					}}
 				>
 				</button>
+				</div>
 			{/each}
 		{/each}
 	</div>
@@ -76,18 +75,19 @@
 		<br>
 		Combo: {$gameState.comboMultiplier}x
 </div>
-
 <style>
 	.gamegrid {
 		display: grid;
-		grid-template-columns: repeat(23, 1fr);
-		grid-row-gap: 4px;
-		grid-column-gap: 4px;
+		grid-template-columns: repeat(23, 1fr);;
 		margin: auto;
 	}
 
 	.cell {
 		aspect-ratio: 1 / 1;
 		box-sizing: border-box;
+	}
+
+	.highlighted {
+		background-color: rgb(209, 203, 203);
 	}
 </style>
