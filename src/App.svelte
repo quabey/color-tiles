@@ -30,6 +30,8 @@
 
 <div class="h-screen w-screen">
 	<Toaster />
-	<Header/>
+	<div class="z-[1000000] relative">
+		<Header/>
+	</div>
 	<Game />
 </div>
