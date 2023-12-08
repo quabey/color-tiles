@@ -7,7 +7,7 @@
 	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
 
 	let isPaused = true;
-	let cellSize;
+	let cellSize = 0;
 	
 	let gameState = initGameState();
 
@@ -56,7 +56,7 @@
 			{#each row as cell, colIndex}
 				<button
 					disabled={isPaused}
-					class="cell rounded-lg"
+					class="cell rounded-lg drop-shadow-xl"
 					style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 						cell || "transparent"
 					};`}
@@ -66,13 +66,19 @@
 			{/each}
 		{/each}
 	</div>
-
-	<div class="absolute left-0 top-0">
-		<p class="">
-			Game State: Score: {$gameState.score} , Number of moves: {$gameState.numberOfMoves}
-		</p>
-	</div>
 </div>
+
+<div class="absolute left-0 top-0 font-bold">
+		<span class="">
+			Game State: Score: {$gameState.score}
+		</span>
+		<span>
+			Number of moves: {$gameState.numberOfMoves}
+		</span>
+		<span>
+			Combo: {$gameState.comboMultiplier}x
+		</span> 
+	</div>
 
 <style>
 	.gamegrid {
