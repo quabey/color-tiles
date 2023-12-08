@@ -29,14 +29,14 @@
 					<li>
 						<Button
 							on:click={() => (authModal = true)}
-							class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+							class=""
 							aria-current="page">Login</Button
 						>
 					</li>
 				{:else}
 					<li>
 						<Button
-							class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+							class=""
 							aria-current="page">Logout</Button
 						>
 					</li>
@@ -44,7 +44,7 @@
 				<li>
 					<Button
                     on:click={() => (leaderboardModal = true)}
-						class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+						class=""
 						aria-current="page"
 						>Leaderboard
 					</Button>
@@ -52,9 +52,16 @@
 				<li>
                     <!-- TODO: Only show if the game isnt paused and reset grid on grid -->
 					<Button
-						class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+						class=""
 						aria-current="page"
 						>Restart
+					</Button>
+				</li>
+				<li>
+					<Button
+						class=""
+						aria-current="page"
+						>Solve
 					</Button>
 				</li>
 			</ul>
