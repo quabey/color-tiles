@@ -68,17 +68,14 @@
 	</div>
 </div>
 
-<div class="absolute left-0 top-0 font-bold">
-		<span class="">
-			Game State: Score: {$gameState.score}
-		</span>
-		<span>
-			Number of moves: {$gameState.numberOfMoves}
-		</span>
-		<span>
-			Combo: {$gameState.comboMultiplier}x
-		</span> 
-	</div>
+<div class="absolute left-0 top-0 font-bold ml-2">
+		<br>
+		Score: {$gameState.score}
+		<br>
+		Number of moves: {$gameState.numberOfMoves}
+		<br>
+		Combo: {$gameState.comboMultiplier}x
+</div>
 
 <style>
 	.gamegrid {
