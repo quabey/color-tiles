@@ -1,16 +1,41 @@
 <script>
 	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
-    import Auth from "./Auth.svelte";
-    import LeaderBoard from "./leaderboard.svelte";
- 	let authModal = false;
-    let leaderboardModal = false;
-
+	import Auth from "./Auth.svelte";
+	import LeaderBoard from "./leaderboard.svelte";
+	import { supabase } from "./supabase";
+	let authModal = false;
+	let leaderboardModal = false;
 	let isAuthed = false;
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "INITIAL_SESSION") {
+            isAuthed = true;
+            // TODO: New user onboarding walk through?
+
+            // TODO: New user check using session.user
+        } else {
+            isAuthed = false;
+        }
+        if (event === "SIGNED_IN") {
+            isAuthed = true;
+        } else {
+            isAuthed = false;
+        }
+        if (event === "SIGNED_OUT") {
+            isAuthed = false;
+        }
+    });
+
+	// supabase.auth.getUser().then((user) => {
+	// 	if (user) {
+	// 		isAuthed = true;
+	// 	} else {
+    //         isAuthed = false;
+    //     }
+	// });
+console.log("Are you authed? -", isAuthed);
 </script>
 
-<nav
-	class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700"
->
+<nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
 	<div
 		class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
 	>
@@ -36,33 +61,28 @@
 				{:else}
 					<li>
 						<Button
-							class=""
+							on:click={() => {
+								supabase.auth.signOut();
+								isAuthed = false;
+							}}
 							aria-current="page">Logout</Button
 						>
 					</li>
 				{/if}
 				<li>
 					<Button
-                    on:click={() => (leaderboardModal = true)}
+						on:click={() => (leaderboardModal = true)}
 						class=""
 						aria-current="page"
 						>Leaderboard
 					</Button>
 				</li>
 				<li>
-                    <!-- TODO: Only show if the game isnt paused and reset grid on grid -->
-					<Button
-						class=""
-						aria-current="page"
-						>Restart
-					</Button>
+					<!-- TODO: Only show if the game isnt paused and reset grid on grid -->
+					<Button class="" aria-current="page">Restart</Button>
 				</li>
 				<li>
-					<Button
-						class=""
-						aria-current="page"
-						>Solve
-					</Button>
+					<Button class="" aria-current="page">Solve</Button>
 				</li>
 			</ul>
 		</div>
@@ -70,8 +90,8 @@
 </nav>
 
 <Modal bind:open={authModal} size="xs" autoclose={false} class="w-full">
-	<Auth/>
+	<Auth />
 </Modal>
 <Modal bind:open={leaderboardModal} size="lg" autoclose={false} class="w-full">
-	<LeaderBoard/>
+	<LeaderBoard />
 </Modal>

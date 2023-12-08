@@ -49,7 +49,7 @@
 	}
 </script>
 
-<Table hoverable={true}>
+<Table hoverable={true} class="mt-6">
 	<TableHead>
 		<TableHeadCell>User</TableHeadCell>
 		<TableHeadCell on:click={() => sortTable("timed_highscore")}

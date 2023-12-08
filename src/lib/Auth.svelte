@@ -7,7 +7,7 @@
 	const discordSignIn = async () => {
 		const { data, error } = await supabase.auth.signInWithOAuth({
 			provider: "discord",
-		});
+		})
 		console.log(data, error);
 		da = data;
 	};
@@ -16,6 +16,7 @@
 		const { data: { user } } = await supabase.auth.getUser()
 		console.log(user);
 	}
+    log();
 </script>
 
 <div class="flex flex-col space-y-6" >
