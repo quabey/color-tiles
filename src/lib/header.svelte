@@ -12,7 +12,7 @@
 	import LeaderBoard from "./leaderboard.svelte";
 	import { supabase } from "./supabase";
 	import { username, profileImg, email, authState } from "./store/authState";
-	import { get } from "svelte/store";
+    import { resetGameState } from "./store/gameState";
 
 	let authModal = false;
 	let leaderboardModal = false;
@@ -59,7 +59,11 @@
 						>Leaderboard</DropdownItem
 					>
 					<DropdownItem>Solve</DropdownItem>
-					<DropdownItem>Restart</DropdownItem>
+					<DropdownItem
+                        on:click={() => {
+                           resetGameState()
+                        }}
+                    >Restart</DropdownItem>
 					{#if $authState.user == null}
 						<DropdownItem
 							slot="footer"

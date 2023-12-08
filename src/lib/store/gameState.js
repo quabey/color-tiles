@@ -79,6 +79,27 @@ export function initGameState() {
 	return GameState;
 }
 
+// Reset the game state
+export function resetGameState() {
+	GameState.update((state) => {
+		state.grid = []
+		state.score = 0;
+		state.comboMultiplier = 1;
+		state.gameOver = false;
+		state.gameWon = false;
+		state.numberOfMoves = 0;
+		state.metadata = {
+			found: 0,
+			traveledDistance: 0,
+			timer: 0,
+		};
+		return state;
+	});
+	initGameState();
+	return GameState;
+}
+
+
 function chunkArray(array, size) {
 	return Array.from({ length: Math.ceil(array.length / size) }, (v, i) =>
 		array.slice(i * size, i * size + size),
