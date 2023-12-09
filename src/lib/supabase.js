@@ -103,6 +103,8 @@ export const onGameEnd = async (score, time, combo, finished) => {
 	} catch (error) {
 		console.error(error);
 	}
-	
-	console.log(get(authState));
+	authState.update((state) => {
+		state.stats = { ...state.stats, ...returnObj };
+		return state;
+	});
 }
