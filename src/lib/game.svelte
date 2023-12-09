@@ -1,21 +1,19 @@
 <script>
 	import { onMount } from "svelte";
 	import NewGame from "./newGame.svelte";
-	import { onGameEnd, supabase } from "./supabase.js";
+
 	import {
 		initGameState,
 		handleTileClick,
-		getGrid,
+		
 		isPaused,
-		endGame,
 	} from "./store/gameState";
-	import { get } from "svelte/store";
 
-	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
+	import { Modal } from "flowbite-svelte";
 	import { leaderBoardModal } from "./store/leaderBoardState";
+	import { settingsModal } from "./store/settingsState";
 
 	let cellSize = 0;
-	let currentHover = { row: null, col: null };
 
 	let gameState = initGameState();
 
@@ -155,27 +153,13 @@
 			var node = document.createElement("div");
 			node.style.position = "absolute";
 			node.style.zIndex = '5';
-			node.style.left = pos[0] + "%";
-
+			node.style.left = pos[0] + "%"
 			node.style.top = pos[1] + "%";
 			node.style.width = 3 + 'px';
 			node.style.height = 3 + 'px';
 			node.style.borderRadius = "50%";
 			node.style.transform = "translate(-50%, -50%)";
 			node.style.backgroundColor = tileEl.detail.meta_data.oldState;
-
-		// 	position: absolute;
-		// z-index: 5;
-		// top: 0px;
-		// left: 0px;
-		// display: block;
-		// width: 3px;
-		// height: 3px;
-		// color: inherit;
-		// background-color: inherit;
-		// border: 1px solid inherit;
-		// border-radius: 50%;
-		// box-sizing: border-box;
 			var transform_properties = [
 				"translate",
 				"translateX",
@@ -208,7 +192,6 @@
 					);
 				}
 			});
-			// console.log(node);
 			particle_container.appendChild(node);
 		}
 
@@ -303,7 +286,7 @@
 </Modal>
 
 <div class="relative z-0 w-min border-2 border-black border-solid mx-auto">
-	<div class={$isPaused || $leaderBoardModal ? "gamegrid relative blur-sm" : "gamegrid relative"}
+	<div class={$isPaused || $leaderBoardModal || $settingsModal ? "gamegrid relative blur-sm" : "gamegrid relative"}
 	bind:this={gameBoardEl} 
 	>
 		<!-- style={`width: ${23 * cellSize + 22}px; height: ${
@@ -318,7 +301,7 @@
 					<!-- class:highlighted={colIndex == currentHover.col ||
 						rowIndex == currentHover.row} -->
 					<button
-						disabled={$isPaused || $leaderBoardModal}
+						disabled={$isPaused || $leaderBoardModal || $settingsModal}
 						class="cell rounded-lg drop-shadow-xl mx-[3px]"
 						style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 							cell || "transparent"
