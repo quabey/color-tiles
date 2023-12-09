@@ -8,7 +8,7 @@
 
 	let isPaused = true;
 	let cellSize = 0;
-	
+
 	let gameState = initGameState();
 
 	function resizeGrid() {
@@ -30,6 +30,207 @@
 	});
 
 
+	// Partical when tile is distroyed
+	/** @type {import('svelte/action').Action}  */
+	function tileEventManager(node, { state }) {
+		// the node has been mounted in the DOM
+
+		return {
+			update(newValue) {
+				// state has changed
+				if (newValue === undefined || newValue?.state === state) return;
+				// do emit partical effect explosion
+				console.log("Emitting destroy", state, " -> ", newValue?.state);
+
+				node.dispatchEvent(
+					new CustomEvent("explosion", {
+						detail: {
+							msg: "Tile has been exploded",
+							meta_data: {
+								oldState: state,
+								newState: newValue?.state,
+							},
+						},
+					}),
+				);
+			},
+			destroy() {
+				// the node has been removed from the DOM
+			},
+		};
+	}
+
+// // PARTICAL STUFF
+function particle(creation_tick, start, end, duration, lifespan, velocity) {
+		(this.creation_tick = creation_tick),
+			(this.start = start),
+			(this.age = 0);
+		(this.end = end),
+			(this.duration = duration),
+			(this.lifespan = lifespan),
+			(this.velocity = velocity),
+			(this.appearance_params = {
+				scale: [1.5, 0],
+				opacity: [1, 0],
+			});
+	}
+		
+	// Emit destroy partical effect More PARTICAL STUFF 
+	async function emitExplodePartical(tileEl) {
+		// console.log("Emitting destroy");
+		console.log(tileEl);
+
+		const particle_container = tileEl.target
+		particle_container.style.background_color = tileEl.detail.meta_data.newState
+		const spawn = [tileEl.target.offsetLeft, tileEl.target.offsetTop];
+
+		var particles = [];
+		var tick = 0;
+
+		var start_timestamp, previous_timestamp;
+		function doParticles(TS) {
+			if (start_timestamp === undefined) {
+				start_timestamp = TS;
+			}
+			const elapsed = TS - previous_timestamp;
+
+			// if(tick % 1 === 0){
+			if (previous_timestamp !== TS) {
+				particle_container.innerHTML = "";
+
+				particles.forEach(function (p, i) {
+					if (p.age < p.lifespan) {
+						drawParticle(
+							lerp(p.start, p.end, p.age / p.lifespan),
+							p.age / p.lifespan,
+							p.appearance_params
+						);
+						p.age += p.velocity * (elapsed * 0.05);
+					}
+
+					if (tick > p.creation_tick + p.lifespan) {
+						particles.splice(i, 1);
+					}
+				});
+			}
+
+			previous_timestamp = TS;
+			tick++;
+			window.requestAnimationFrame(doParticles);
+		}
+
+		window.requestAnimationFrame(doParticles);
+
+		function createParticle(start, max_distance) {
+			var creation_tick = tick;
+			var ofs = [start[0], start[1]];
+			var end = polarToCartesian(
+				Math.random() * 360,
+				Math.random() * max_distance,
+				ofs,
+			);
+			var duration = 100;
+			var lifespan = 100;
+			var velocity = 3;
+
+			var part = new particle(
+				creation_tick,
+				start,
+				end,
+				duration,
+				lifespan,
+				velocity,
+			);
+			particles.push(part);
+		}
+
+
+	function drawParticle(pos, age, appearance_params) {
+			//var fragment_node = document.createDocumentFragment();
+			var node = document.createElement("div");
+			node.style.left = pos[0] + "px";
+			node.style.top = pos[1] + "px";
+			var transform_properties = [
+				"translate",
+				"translateX",
+				"translateY",
+				"scale",
+				"scaleX",
+				"scaleY",
+				"scaleZ",
+				"rotate",
+				"rotateX",
+				"rotateY",
+				"rotateZ",
+			];
+			Object.keys(appearance_params).forEach(function (k) {
+				if (transform_properties.includes(k)) {
+					node.style.transform =
+						k +
+						"(" +
+						lerp(
+							[appearance_params[k][0]],
+							[appearance_params[k][1]],
+							age,
+						) +
+						")";
+				} else {
+					node.style[k] = lerp(
+						[appearance_params[k][0]],
+						[appearance_params[k][1]],
+						age,
+					);
+				}
+			});
+			// console.log(node);
+			particle_container.appendChild(node);
+		}
+
+	function polarToCartesian(angle, length, offset) {
+		var output = [offset[0], offset[1]];
+		var rad = degToRad(angle);
+		output[0] += length * Math.cos(rad);
+		output[1] += length * Math.sin(rad);
+		return output;
+	}
+	function degToRad(deg) {
+		return deg * (Math.PI / 180);
+	}
+
+	function lerp(P, Q, t) {
+		var output = [];
+		if (t < 0) {
+			t = 0;
+		}
+		if (t > 1) {
+			t = 1;
+		}
+
+		var i = 0;
+		while (i < P.length) {
+			output.push(P[i] + t * (Q[i] - P[i]));
+			i++;
+		}
+		return output;
+	}
+
+	
+		// Create each of the particals
+		var max_particles = 100;
+		var max_distance = 300;
+
+		// for (let i = 0; i < max_particles; i++) {
+		// 	createParticle([0, 0], max_distance);
+		// }
+
+		setTimeout(() => {
+			for (let i = 0; i < max_particles; i++) {
+				createParticle(spawn, max_distance);
+			}
+		}, 1000);
+	}
+
+
 </script>
 
 <div class="relative">
@@ -47,7 +248,9 @@
 	{/if}
 
 	<div
-		class={isPaused ? "gamegrid relative blur-sm p-5 pt-8" : "gamegrid relative p-5 pt-8"}
+		class={isPaused
+			? "gamegrid relative  blur-sm p-5 pt-8"
+			: "gamegrid relative p-5 pt-8"}
 		style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
 		}px;`}
@@ -61,7 +264,10 @@
 						cell || "transparent"
 					};`}
 					on:click={() => handleTileClick(rowIndex, colIndex)}
+					use:tileEventManager={{ state: cell }}
+					on:explosion={emitExplodePartical}
 				>
+				<div class=""></div>
 				</button>
 			{/each}
 		{/each}
@@ -69,16 +275,16 @@
 </div>
 
 <div class="absolute left-0 top-0 font-bold">
-		<span class="">
-			Game State: Score: {$gameState.score}
-		</span>
-		<span>
-			Number of moves: {$gameState.numberOfMoves}
-		</span>
-		<span>
-			Combo: {$gameState.comboMultiplier}x
-		</span> 
-	</div>
+	<span class="">
+		Game State: Score: {$gameState.score}
+	</span>
+	<span>
+		Number of moves: {$gameState.numberOfMoves}
+	</span>
+	<span>
+		Combo: {$gameState.comboMultiplier}x
+	</span>
+</div>
 
 <style>
 	.gamegrid {
@@ -87,10 +293,28 @@
 		grid-row-gap: 4px;
 		grid-column-gap: 4px;
 		margin: auto;
+		position: relative;
+		/* color: red; */
 	}
 
 	.cell {
 		aspect-ratio: 1 / 1;
+		box-sizing: border-box;
+		position: relative;
+	}
+
+	button.cell > div {
+		position: absolute;
+		z-index: 5;
+		top: 0px;
+		left: 0px;
+		display: block;
+		width: 3px;
+		height: 3px;
+		color: inherit;
+		background-color: inherit;
+		border: 1px solid inherit;
+		border-radius: 50%;
 		box-sizing: border-box;
 	}
 </style>
