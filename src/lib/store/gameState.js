@@ -1,4 +1,5 @@
 import { writable, get } from "svelte/store";
+import { onGameEnd } from "../supabase";
 
 const GameState = writable({
 	grid: [],
@@ -13,6 +14,9 @@ const GameState = writable({
 		timer: 0,
 	},
 });
+
+export const isPaused = writable(true);
+
 // Initialize the colours
 export const colors = [
 	"red",
@@ -127,6 +131,11 @@ function playSound(sound) {
 	}
 }
 
+export function endGame() {
+	let gameState = get(GameState);
+	onGameEnd(gameState.score, gameState.metadata.timer, gameState.comboMultiplier, gameState.gameWon);
+}
+
 // GAME LOGIC
 export function handleTileClick(row, col) {
 	console.log(row, col);
@@ -155,9 +164,12 @@ export function handleTileClick(row, col) {
 		// gameState.metadata.found = false;
 		GameState.update((state) => {
 			state.metadata.found = 0;
+			if (checkWin()) {
+				state.gameWon = true;
+			}
 			return state;
 		});
-		checkWin();
+		
 	}
 }
 
