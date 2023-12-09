@@ -12,22 +12,51 @@
 	import LeaderBoard from "./leaderboard.svelte";
 	import { supabase } from "./supabase";
 	import { username, profileImg, email, authState } from "./store/authState";
-    import { resetGameState } from "./store/gameState";
+    import { resetGameState, getGameState, isPaused, endGame } from "./store/gameState";
 
 	let authModal = false;
 	let leaderboardModal = false;
+    const gameState = getGameState();
+
 </script>
 
 <nav class=" border-gray-200 dark:bg-gray-900 dark:border-gray-700">
 	<div
 		class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
 	>
-		<Button class="flex items-center space-x-3 rtl:space-x-reverse">
+		<Label class="flex items-center space-x-3 rtl:space-x-reverse">
 			<span
-				class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+				class="self-center text-4xl font-semibold whitespace-nowrap dark:text-white"
 				>Color Tiles</span
 			>
-		</Button>
+		</Label>
+
+        <div class="">
+            <div class="flex flex-col space-y-2 px-4 justify-center items-center">
+                <h3 class="text-lg mb-0">Game Mode: {$gameState.gameMode}</h3>
+                <div class="grid grid-cols-3 gap-x-12 place-items-center">
+                    <div class="grid justify-items-center">
+                        <h4 class="font-bold w-full">Score</h4>
+                        <p class="text-xl">{$gameState.score}</p>
+
+                    </div>
+                    <div class="grid justify-items-center">
+                        <h4 class="font-bold w-full">Turns</h4>
+                        <p class="text-xl">{$gameState.numberOfMoves}</p>
+                    </div>
+                    <div class="grid justify-items-center">
+                        <h4 class="font-bold w-full">Combo</h4>
+                        <p class="text-xl">{$gameState.comboMultiplier}x</p>
+                    </div>
+                </div>
+                <Button class="w-full p-1" color="red" on:click={() => {
+                    endGame()
+                }}
+                disabled={$isPaused}>
+                    <Label class="text-white">End Game</Label>
+                </Button>
+            </div>
+        </div>
 
 		<div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
 			<ul

@@ -239,20 +239,22 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 
 <div class="relative z-0">
 	<div
-		class={$isPaused ? "gamegrid relative blur-sm p-5 pt-8" : "gamegrid relative p-5 pt-8"}
-		style={`width: ${23 * cellSize + 22}px; height: ${
-			15 * cellSize + 14
-		}px;`}
+		class={$isPaused ? "gamegrid relative blur-sm" : "gamegrid relative"}
 	>
+		<!-- style={`width: ${23 * cellSize + 22}px; height: ${
+			15 * cellSize + 14
+		}px;`} -->
 		{#each $gameState.grid as row, rowIndex}
 			{#each row as cell, colIndex}
-				<div class:highlighted={colIndex == currentHover.col || rowIndex == currentHover.row}>
-					<button
-					disabled={$isPaused}
-					class="cell rounded-lg drop-shadow-xl mx-[3px]"
-					style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
-						cell || "transparent"
-					};`}
+				<div class="relative"
+				class:highlighted={colIndex == currentHover.col || rowIndex == currentHover.row}
+				>
+				<button
+				disabled={$isPaused}
+				class="cell rounded-lg drop-shadow-xl mx-[3px]"
+				style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
+					cell || "transparent"
+				};`}
 					on:click={() => handleTileClick(rowIndex, colIndex)}
 					use:tileEventManager={{ state: cell }}
 					on:explosion={emitExplodePartical}
@@ -267,30 +269,18 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 	</div>
 
 </div>
-<div class="absolute left-0 top-0 font-bold ml-2">
-		<br>
-		Score: {$gameState.score}
-		<br>
-		Number of moves: {$gameState.numberOfMoves}
-		<br>
-		Combo: {$gameState.comboMultiplier}x
-		<br>
-		<button on:click={() => endGame()}>end </button>
-</div>
 
 <style>
 	.gamegrid {
 		display: grid;
 		grid-template-columns: repeat(23, 1fr);;
-		margin: auto;
-		position: relative;
+		/* position: relative; */
 		/* color: red; */
 	}
 
 	.cell {
 		aspect-ratio: 1 / 1;
 		box-sizing: border-box;
-		position: relative;
 	}
 
 	button.cell > div {

@@ -2,6 +2,7 @@ import { writable, get } from "svelte/store";
 import { onGameEnd } from "../supabase";
 
 const GameState = writable({
+	gameMode: "Classic",
 	grid: [],
 	score: 0,
 	comboMultiplier: 1,
@@ -113,8 +114,10 @@ function chunkArray(array, size) {
 }
 
 // HLEPER FUNCTIONS
+export const getGameState = () => GameState;
 export const getGrid = () => get(GameState).grid;
 export const getScore = () => get(GameState).score;
+export const getComboMultiplier = () => get(GameState).comboMultiplier;
 export const getGameOver = () => get(GameState).gameOver;
 export const getGameWon = () => get(GameState).gameWon;
 export const getNumberOfMoves = () => get(GameState).numberOfMoves;
