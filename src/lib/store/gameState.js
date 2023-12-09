@@ -124,16 +124,12 @@ export const getNumberOfMoves = () => get(GameState).numberOfMoves;
 export const getMetadata = () => get(GameState).metadata;
 
 function playSound(sound) {
-	switch (sound) {
-		case "success":
-			let successSound = new Audio(
-				"https://cdn.freesound.org/previews/702/702806_6142149-lq.mp3",
-			);
-			successSound.play();
-			break;
-		default:
-			break;
-	}
+	if (sound !== 'success') return;
+	let successSound = new Audio("https://cdn.freesound.org/previews/702/702806_6142149-lq.mp3");
+	const combo = getComboMultiplier();
+	successSound.preservesPitch = false;
+	successSound.playbackRate = Math.min(1 + (combo - 1) / 10, 2);
+	successSound.play();
 }
 
 export function endGame() {
