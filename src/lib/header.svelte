@@ -35,16 +35,25 @@
             <div class="flex flex-col space-y-2 px-4 justify-center items-center">
                 <h3 class="text-lg mb-0">Game Mode: {$gameState.gameMode}</h3>
                 <div class="grid grid-cols-3 gap-x-12 place-items-center">
-                    <div class="grid justify-items-center">
+                    <div class="grid justify-items-center rounded-xl px-4">
                         <h4 class="font-bold w-full">Score</h4>
                         <p class="text-xl">{$gameState.score}</p>
 
                     </div>
-                    <div class="grid justify-items-center">
+                    <div class="grid justify-items-center rounded-xl px-4">
                         <h4 class="font-bold w-full">Turns</h4>
                         <p class="text-xl">{$gameState.numberOfMoves}</p>
                     </div>
-                    <div class="grid justify-items-center">
+                    <div 
+						class={`
+							grid 
+							justify-items-center 
+							rounded-xl
+							px-4
+							${$gameState.comboMultiplier > 1 && $gameState.comboMultiplier <= 3 ? "bg-green-600" : ""} 
+							${$gameState.comboMultiplier > 3 && $gameState.comboMultiplier <= 5 ? "bg-orange-500" : ""} 
+							${$gameState.comboMultiplier > 5 ? "bg-red-800" : ""} 
+						`}>
                         <h4 class="font-bold w-full">Combo</h4>
                         <p class="text-xl">{$gameState.comboMultiplier}x</p>
                     </div>
