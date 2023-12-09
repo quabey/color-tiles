@@ -19,12 +19,15 @@
     log();
 </script>
 
-<div class="flex flex-col space-y-6" >
-	<h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">
-		Sign in
-	</h3>
-	<button on:click={discordSignIn}>
-		<img src="https://pughub.tf/discordbutton.png" alt="">
-	</button>
-	<button on:click={log}>log</button>
+<div class="flex flex-col items-center space-y-4 py-6">
+    <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">
+        Sign in
+    </h3>
+    <button on:click={discordSignIn}>
+        <img src="https://pughub.tf/discordbutton.png" alt="Sign in with Discord">
+    </button>
+    <button on:click={log}>
+        Log
+    </button>
 </div>
+
