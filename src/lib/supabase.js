@@ -9,7 +9,9 @@ export const supabase = createClient(
 );
 
 export const getLeaderboard = async () => {
-	const { data, error } = await supabase.from("color_profiles").select("username, timed_highscore, timed_completionTime, timed_gamesPlayed, timed_gamesCompleted");
+	const { data, error } = await supabase
+		.from("color_profiles")
+		.select("username, timed_highscore, timed_completionTime, timed_gamesPlayed, timed_gamesCompleted, timed_highestCombo");
 	if (error) {
 		console.log(error);
 		return [];
