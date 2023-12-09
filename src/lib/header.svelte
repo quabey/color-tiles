@@ -13,9 +13,9 @@
 	import { supabase } from "./supabase";
 	import { username, profileImg, email, authState } from "./store/authState";
     import { resetGameState, getGameState, isPaused, endGame } from "./store/gameState";
+	import { leaderBoardModal } from "./store/leaderBoardState";
 
 	let authModal = false;
-	let leaderboardModal = false;
     const gameState = getGameState();
 
 </script>
@@ -52,7 +52,7 @@
                 <Button class="w-full p-1" color="red" on:click={() => {
                     endGame()
                 }}
-                disabled={$isPaused}>
+                disabled={$isPaused || $leaderBoardModal}>
                     <Label class="text-white">End Game</Label>
                 </Button>
             </div>
@@ -84,7 +84,10 @@
 							>
 						{/if}
 					</div>
-					<DropdownItem on:click={() => (leaderboardModal = true)}
+					<DropdownItem on:click={() => {
+						$leaderBoardModal = true;
+						$isPaused = false;
+					}}
 						>Leader board</DropdownItem
 					>
 					<DropdownItem class="z-[1000]">Solve</DropdownItem>
@@ -112,6 +115,9 @@
 <Modal bind:open={authModal} size="xs" autoclose={false} class="w-full">
 	<Auth />
 </Modal>
-<Modal title="Leaderboard" bind:open={leaderboardModal} size="lg" autoclose={false} class="w-full">
+<Modal title="Leaderboard" bind:open={$leaderBoardModal} size="lg" autoclose={false} class="w-full" on:close={() => {
+	$leaderBoardModal = false;
+	$isPaused = true;
+}}>
 	<LeaderBoard />
 </Modal>
