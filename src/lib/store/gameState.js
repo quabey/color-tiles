@@ -171,6 +171,7 @@ export function handleTileClick(row, col) {
 		// gameState.metadata.found = false;
 		GameState.update((state) => {
 			state.metadata.found = 0;
+			state.numberOfMoves += 1;
 			if (checkWin()) {
 				state.gameWon = true;
 			}
@@ -201,7 +202,6 @@ function checkAndClear(color1, color2) {
 
 		GameState.update((state) => {
 			state.grid = gameState.grid;
-			state.numberOfMoves += 1;
 			return state;
 		});
 

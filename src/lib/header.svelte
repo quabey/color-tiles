@@ -112,6 +112,6 @@
 <Modal bind:open={authModal} size="xs" autoclose={false} class="w-full">
 	<Auth />
 </Modal>
-<Modal bind:open={leaderboardModal} size="lg" autoclose={false} class="w-full">
+<Modal title="Leaderboard" bind:open={leaderboardModal} size="lg" autoclose={false} class="w-full">
 	<LeaderBoard />
 </Modal>

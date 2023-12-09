@@ -7,23 +7,21 @@
 		TableHead,
 		TableHeadCell,
 	} from "flowbite-svelte";
-	import { get, writable } from "svelte/store";
+	import { writable } from "svelte/store";
 	import { getLeaderboard } from "./supabase.js";
-	let items = [];
+
+	const items = writable([]); // Store for items
+	const sortKey = writable("timed_highscore"); // default sort key
+	const sortDirection = writable(-1); // default sort direction (ascending)
 
 	const load = async () => {
-		items = await getLeaderboard();
-		console.log(items);
+		const leaderboardData = await getLeaderboard();
+		console.log(leaderboardData);
+		items.set(leaderboardData); // Update items store with loaded data
 	};
 	load();
 
-	const sortKey = writable("highscore"); // default sort key
-	const sortDirection = writable(1); // default sort direction (ascending)
-	const sortItems = writable(items.slice()); // make a copy of the items array
-
-	// Define a function to sort the items
 	const sortTable = (key) => {
-		// If the same key is clicked, reverse the sort direction
 		if ($sortKey === key) {
 			sortDirection.update((val) => -val);
 		} else {
@@ -32,21 +30,13 @@
 		}
 	};
 
-	$: {
+	$: sortedItems = $items.slice().sort((a, b) => {
 		const key = $sortKey;
 		const direction = $sortDirection;
-		const sorted = [...$sortItems].sort((a, b) => {
-			const aVal = a[key];
-			const bVal = b[key];
-			if (aVal < bVal) {
-				return -direction;
-			} else if (aVal > bVal) {
-				return direction;
-			}
-			return 0;
-		});
-		sortItems.set(sorted);
-	}
+		const aVal = a[key];
+		const bVal = b[key];
+		return (aVal < bVal ? -1 : 1) * direction;
+	});
 </script>
 
 <Table hoverable={true} class="mt-6">
@@ -66,7 +56,7 @@
 		>
 	</TableHead>
 	<TableBody>
-		{#each $sortItems as item}
+		{#each sortedItems as item}
 			<TableBodyRow>
 				<TableBodyCell>{item.username}</TableBodyCell>
 				<TableBodyCell>{item.timed_highscore}</TableBodyCell>

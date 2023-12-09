@@ -15,8 +15,8 @@
 	function resizeGrid() {
 		const maxWidth = window.innerWidth;
 		const maxHeight = window.innerHeight;
-		const gridWidth = maxWidth * 0.9; // 90% of the viewport width
-		const gridHeight = maxHeight * 0.9; // 90% of the viewport height
+		const gridWidth = maxWidth * 0.7; // 90% of the viewport width
+		const gridHeight = maxHeight * 0.7; // 90% of the viewport height
 
 		// Calculate the size for one cell, accounting for the gaps (22 gaps in total)
 		cellSize = Math.min(
@@ -237,7 +237,7 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 	<NewGame />
 </Modal>
 
-<div class="relative z-0">
+<div class="relative z-0 w-min border-2 border-black border-solid mx-auto">
 	<div
 		class={$isPaused ? "gamegrid relative blur-sm" : "gamegrid relative"}
 	>
@@ -273,7 +273,8 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 <style>
 	.gamegrid {
 		display: grid;
-		grid-template-columns: repeat(23, 1fr);;
+		grid-template-columns: repeat(23, 1fr);
+		grid-gap: 0;
 		/* position: relative; */
 		/* color: red; */
 	}

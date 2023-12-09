@@ -28,10 +28,12 @@
 	});
 </script>
 
-<div class="h-screen w-screen">
+<div class="h-full w-full">
 	<Toaster />
 	<div class="relative">
 		<Header/>
 	</div>
-	<Game />
+	<div class="">
+		<Game />
+	</div>
 </div>
