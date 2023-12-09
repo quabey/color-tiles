@@ -1,8 +1,15 @@
 import { get, writable } from "svelte/store";
 
 export const authState = writable({
-    user: null,
-    session: null,
+	user: null,
+	session: null,
+	stats: {
+		timed_highscore: 0,
+		timed_highestCombo: 0,
+		timed_gamesPlayed: 0,
+		timed_gamesCompleted: 0,
+		timed_completionTime: 0,
+	},
 });
 
 export const username = writable("");

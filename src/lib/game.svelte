@@ -1,8 +1,8 @@
 <script>
 	import { onMount } from "svelte";
 	import NewGame from "./newGame.svelte";
-	import { supabase } from "./supabase.js";
-	import { initGameState, handleTileClick, getGrid, isPaused } from "./store/gameState";
+	import { onGameEnd, supabase } from "./supabase.js";
+	import { initGameState, handleTileClick, getGrid, isPaused, endGame } from "./store/gameState";
 	import { get } from "svelte/store";
 
 	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
@@ -29,8 +29,6 @@
 		window.addEventListener("resize", resizeGrid);
 		resizeGrid();
 	});
-
-
 </script>
 
 <Modal bind:open={$isPaused} dismissable={false}>
@@ -56,8 +54,6 @@
 					on:click={() => handleTileClick(rowIndex, colIndex)}
 					on:mouseenter={() => {
 						currentHover = { row: rowIndex, col: colIndex };
-						console.log(currentHover);
-							
 					}}
 				>
 				</button>
@@ -74,6 +70,8 @@
 		Number of moves: {$gameState.numberOfMoves}
 		<br>
 		Combo: {$gameState.comboMultiplier}x
+		<br>
+		<button on:click={() => endGame()}>end </button>
 </div>
 <style>
 	.gamegrid {

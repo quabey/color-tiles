@@ -1,4 +1,5 @@
 import { writable, get } from "svelte/store";
+import { onGameEnd } from "../supabase";
 
 const GameState = writable({
 	grid: [],
@@ -128,6 +129,11 @@ function playSound(sound) {
 		default:
 			break;
 	}
+}
+
+export function endGame() {
+	let gameState = get(GameState);
+	onGameEnd(gameState.score, gameState.metadata.timer, gameState.comboMultiplier, gameState.gameWon);
 }
 
 // GAME LOGIC
