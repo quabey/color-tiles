@@ -12,6 +12,7 @@ const GameState = writable({
 		found: 0,
 		traveledDistance: 0,
 		timer: 0,
+		highestCombo: 0,
 	},
 });
 
@@ -96,6 +97,7 @@ export function resetGameState() {
 			found: 0,
 			traveledDistance: 0,
 			timer: 0,
+			highestCombo: 0,
 		};
 		return state;
 	});
@@ -133,7 +135,9 @@ function playSound(sound) {
 
 export function endGame() {
 	let gameState = get(GameState);
-	onGameEnd(gameState.score, gameState.metadata.timer, gameState.comboMultiplier, gameState.gameWon);
+	onGameEnd(gameState.score, gameState.metadata.timer, gameState.metadata.highestCombo, gameState.gameWon);
+	isPaused.set(true);
+	resetGameState();
 }
 
 // GAME LOGIC
@@ -227,6 +231,12 @@ function calcComboMultiplier(removed) {
 	} else {
 		GameState.update((state) => {
 			state.comboMultiplier = current + (removed - 2);
+			return state;
+		});
+	}
+	if (get(GameState).comboMultiplier > get(GameState).metadata.highestCombo) {
+		GameState.update((state) => {
+			state.metadata.highestCombo = get(GameState).comboMultiplier;
 			return state;
 		});
 	}
