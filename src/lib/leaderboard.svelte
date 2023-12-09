@@ -54,6 +54,9 @@
 		<TableHeadCell on:click={() => sortTable("timed_gamesCompleted")}
 			>Games Won</TableHeadCell
 		>
+		<TableHeadCell on:click={() => sortTable("timed_highestCombo")}
+			>Highest Combo</TableHeadCell
+		>
 	</TableHead>
 	<TableBody>
 		{#each sortedItems as item}
@@ -63,6 +66,7 @@
 				<TableBodyCell>{item.timed_completionTime}</TableBodyCell>
 				<TableBodyCell>{item.timed_gamesPlayed}</TableBodyCell>
 				<TableBodyCell>{item.timed_gamesCompleted}</TableBodyCell>
+				<TableBodyCell>{item.timed_highestCombo}</TableBodyCell>
 			</TableBodyRow>
 		{/each}
 	</TableBody>
