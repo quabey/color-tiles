@@ -16,15 +16,15 @@
     </a>
     <hr class="h-[2px] my-8 bg-gray-200 border-0">
     <p class="text-lg font-semibold mb-2 text-gray-900">Contributors</p>
-    <ol class="max-w-md space-y-1 text-gray-900 list-decimal list-inside">
+    <ul class="max-w-md space-y-1 text-gray-900 list-inside list-disc">
         <li>
             <a href="https://github.com/quabey" target="_blank" class="font-medium hover:underline text-blue-600">
-                Quabey
+                bey
             </a>
         </li>
         <li>
             <a href="https://github.com/isaac-diaby" target="_blank" class="font-medium hover:underline text-blue-600">
-                Isaac Diaby
+                midiaby
             </a>
         </li>
         <li>
@@ -37,5 +37,5 @@
                 Ruben Olano
             </a>
         </li>
-    </ol>
+    </ul>
 </div>
