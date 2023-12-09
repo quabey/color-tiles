@@ -5,7 +5,6 @@
 	import {
 		initGameState,
 		handleTileClick,
-		
 		isPaused,
 	} from "./store/gameState";
 
@@ -81,11 +80,11 @@
 	}
 
 	// Emit destroy partical effect More PARTICAL STUFF
-	function emitExplodePartical(tileEl) {
+	async function emitExplodePartical(tileEl) {
 		const particle_container = tileEl.target;
 		particle_container.style.background_color =
 			tileEl.detail.meta_data.newState;
-		const spawn = [50, 50]
+		const spawn = [50, 50];
 		// [tileEl.target.offsetLeft, tileEl.target.offsetTop];
 
 		var particles = [];
@@ -152,11 +151,11 @@
 			//var fragment_node = document.createDocumentFragment();
 			var node = document.createElement("div");
 			node.style.position = "absolute";
-			node.style.zIndex = '5';
-			node.style.left = pos[0] + "%"
+			node.style.zIndex = "5";
+			node.style.left = pos[0] + "%";
 			node.style.top = pos[1] + "%";
-			node.style.width = 3 + 'px';
-			node.style.height = 3 + 'px';
+			node.style.width = 3 + "px";
+			node.style.height = 3 + "px";
 			node.style.borderRadius = "50%";
 			node.style.transform = "translate(-50%, -50%)";
 			node.style.backgroundColor = tileEl.detail.meta_data.oldState;
@@ -227,7 +226,6 @@
 		var max_particles = 100;
 		var max_distance = 300;
 
-		
 		setTimeout(() => {
 			for (let i = 0; i < max_particles; i++) {
 				createParticle(spawn, max_distance);
@@ -237,48 +235,31 @@
 
 	let gameBoardEl;
 	// Emit grid axis
-	let crossGrid = { row: 0, col: 0 }
-
-	function updateGridAxis(TileEl, select) {
+	let crossGrid = { row: 0, col: 0 };
+	// Updates the current cross grid axis and emits the event to the tiles
+	async function updateGridAxis(TileEl, select) {
 		crossGrid = select;
-		// const grid = getGrid();
-		// const rowLength = grid[row].length;
-		// const colLength = grid.length;
-
-		console.log(crossGrid);
-		// Emit Grid axis change 
+		// Emit Grid axis change
 		// gameBoardEl.target.offsetParent.offsetParent
 		for (let tileEl of gameBoardEl.children) {
 			tileEl.dispatchEvent(
 				new CustomEvent("gridAxis", {
 					detail: {
 						msg: "Tile Update Grid Highlights Axis",
-					}
+					},
 				}),
 			);
-
 		}
-		// Emit col axis
-
 	}
 
-	function emitGridAxis(tileEl, rowIndex, colIndex) { 
-		// console.log("Emitting grid axis GOTTTTTTTIESSSSSSSS", tileEl);
+	// Consumer of the grid axis event emitted by the tiles when the grid axis changes
+	function emitGridAxis(tileEl, rowIndex, colIndex) {
 		if (crossGrid.row === rowIndex || crossGrid.col === colIndex) {
-		// if (tileEl.detail.meta_data.row === rowIndex || tileEl.detail.meta_data.col === colIndex) {
-			// Update css background color
-			// tileEl.target.setAttribute("style", "background-color: rgb(209, 203, 203);");
 			tileEl.target.style.backgroundColor = "rgb(209, 203, 203)";
-			// tileEl.target.classList.add("highlighted"); // Doesn't  render new class added to element
-		}else{
-			// tileEl.target.setAttribute("style", "background-color: transparent;");
+		} else {
 			tileEl.target.style.backgroundColor = "transparent";
-			// tileEl.target.classList.remove("highlighted");
 		}
-			
-
 	}
-
 </script>
 
 <Modal bind:open={$isPaused} dismissable={false}>
@@ -286,8 +267,11 @@
 </Modal>
 
 <div class="relative z-0 w-min border-2 border-black border-solid mx-auto">
-	<div class={$isPaused || $leaderBoardModal || $settingsModal ? "gamegrid relative blur-sm" : "gamegrid relative"}
-	bind:this={gameBoardEl} 
+	<div
+		class={$isPaused || $leaderBoardModal || $settingsModal
+			? "gamegrid relative blur-sm"
+			: "gamegrid relative"}
+		bind:this={gameBoardEl}
 	>
 		<!-- style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
@@ -296,12 +280,16 @@
 			{#each row as cell, colIndex}
 				<div
 					class="relative"
-					on:gridAxis={function (el) { emitGridAxis(el, rowIndex, colIndex)}}
+					on:gridAxis={function (el) {
+						emitGridAxis(el, rowIndex, colIndex);
+					}}
 				>
 					<!-- class:highlighted={colIndex == currentHover.col ||
 						rowIndex == currentHover.row} -->
 					<button
-						disabled={$isPaused || $leaderBoardModal || $settingsModal}
+						disabled={$isPaused ||
+							$leaderBoardModal ||
+							$settingsModal}
 						class="cell rounded-lg drop-shadow-xl mx-[3px]"
 						style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 							cell || "transparent"
@@ -309,11 +297,13 @@
 						on:click={() => handleTileClick(rowIndex, colIndex)}
 						use:tileEventManager={{ state: cell }}
 						on:explosion={emitExplodePartical}
-						
 						on:mouseenter={(el) => {
 							// Only show grid axis when its a valid position
 							// if (cell !== "transparent") return;
-							updateGridAxis(el, { row: rowIndex, col: colIndex });
+							updateGridAxis(el, {
+								row: rowIndex,
+								col: colIndex,
+							});
 						}}
 					>
 					</button>
