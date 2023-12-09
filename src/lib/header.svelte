@@ -13,9 +13,9 @@
 	import { supabase } from "./supabase";
 	import { username, profileImg, email, authState } from "./store/authState";
     import { resetGameState, getGameState, isPaused, endGame } from "./store/gameState";
+	import { leaderBoardModal } from "./store/leaderBoardState";
 
 	let authModal = false;
-	let leaderboardModal = false;
     const gameState = getGameState();
 
 </script>
@@ -52,7 +52,7 @@
                 <Button class="w-full p-1" color="red" on:click={() => {
                     endGame()
                 }}
-                disabled={$isPaused}>
+                disabled={$isPaused || $leaderBoardModal}>
                     <Label class="text-white">End Game</Label>
                 </Button>
             </div>
@@ -62,17 +62,17 @@
 			<ul
 				class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0  dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
 			>
-				<Button pill color="light" id="avatar_menu" class="!p-1">
+				<Button pill color="light" id="avatar_menu" class="!p-1 transition hover:scale-125 z-[100]">
 					<Avatar
 						src={$profileImg}
 						class="me-2"
 					/>
-                    <Label defaultClass="text-lg" >
-					{$username != "" ? $username : "Login 👋"}
+                    <Label defaultClass="text-lg hover:cursor-pointer" >
+					{$username != "" ? $username : "Log in 👋"}
                 </Label>
 				</Button>
 
-				<Dropdown triggeredBy="#avatar_menu">
+				<Dropdown triggeredBy="#avatar_menu" containerClass='z-[100]'>
 					<div slot="header" class="px-4 py-2">
 						{#if $authState.user != null}
 							<span
@@ -84,27 +84,26 @@
 							>
 						{/if}
 					</div>
-					<DropdownItem on:click={() => (leaderboardModal = true)}
-						>Leaderboard</DropdownItem
+					<DropdownItem on:click={() => {
+						$leaderBoardModal = true;
+						$isPaused = false;
+					}}
+						>Leader board</DropdownItem
 					>
-					<DropdownItem>Solve</DropdownItem>
-					<DropdownItem
-                        on:click={() => {
-                           resetGameState()
-                        }}
-                    >Restart</DropdownItem>
+					<DropdownItem class="z-[1000]">Solve</DropdownItem>
+					<DropdownItem on:click={resetGameState} class="z-[1000]">Restart</DropdownItem>
 					{#if $authState.user == null}
 						<DropdownItem
 							slot="footer"
 							on:click={() => (authModal = true)}
-							>Login</DropdownItem
+							class="z-[1000]">Login</DropdownItem
 						>
 					{:else}
 						<DropdownItem
 							slot="footer"
 							on:click={() => {
 								supabase.auth.signOut();
-							}}>Sign out</DropdownItem
+							}} class="z-[1000]">Sign out</DropdownItem
 						>
 					{/if}
 				</Dropdown>
@@ -113,9 +112,12 @@
 	</div>
 </nav>
 
-<Modal bind:open={authModal} size="xs" autoclose={false} class="w-full">
+<Modal bind:open={authModal} size="xs" autoclose={false} class="w-full" classBackdrop="z-[100]" classDialog="z-[100]">
 	<Auth />
 </Modal>
-<Modal title="Leaderboard" bind:open={leaderboardModal} size="lg" autoclose={false} class="w-full">
+<Modal title="Leaderboard" bind:open={$leaderBoardModal} size="lg" autoclose={false} class="w-full" on:close={() => {
+	$leaderBoardModal = false;
+	$isPaused = true;
+}}>
 	<LeaderBoard />
 </Modal>

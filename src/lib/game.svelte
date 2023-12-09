@@ -2,10 +2,17 @@
 	import { onMount } from "svelte";
 	import NewGame from "./newGame.svelte";
 	import { onGameEnd, supabase } from "./supabase.js";
-	import { initGameState, handleTileClick, getGrid, isPaused, endGame } from "./store/gameState";
+	import {
+		initGameState,
+		handleTileClick,
+		getGrid,
+		isPaused,
+		endGame,
+	} from "./store/gameState";
 	import { get } from "svelte/store";
 
 	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
+	import { leaderBoardModal } from "./store/leaderBoardState";
 
 	let cellSize = 0;
 	let currentHover = { row: null, col: null };
@@ -60,8 +67,8 @@
 		};
 	}
 
-// // PARTICAL STUFF
-function particle(creation_tick, start, end, duration, lifespan, velocity) {
+	// // PARTICAL STUFF
+	function particle(creation_tick, start, end, duration, lifespan, velocity) {
 		(this.creation_tick = creation_tick),
 			(this.start = start),
 			(this.age = 0);
@@ -74,14 +81,15 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 				opacity: [1, 0],
 			});
 	}
-		
-	// Emit destroy partical effect More PARTICAL STUFF 
+
+	// Emit destroy partical effect More PARTICAL STUFF
 	async function emitExplodePartical(tileEl) {
 		// console.log("Emitting destroy");
 		console.log(tileEl);
 
-		const particle_container = tileEl.target
-		particle_container.style.background_color = tileEl.detail.meta_data.newState
+		const particle_container = tileEl.target;
+		particle_container.style.background_color =
+			tileEl.detail.meta_data.newState;
 		const spawn = [tileEl.target.offsetLeft, tileEl.target.offsetTop];
 
 		var particles = [];
@@ -103,7 +111,7 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 						drawParticle(
 							lerp(p.start, p.end, p.age / p.lifespan),
 							p.age / p.lifespan,
-							p.appearance_params
+							p.appearance_params,
 						);
 						p.age += p.velocity * (elapsed * 0.05);
 					}
@@ -144,8 +152,7 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 			particles.push(part);
 		}
 
-
-	function drawParticle(pos, age, appearance_params) {
+		function drawParticle(pos, age, appearance_params) {
 			//var fragment_node = document.createDocumentFragment();
 			var node = document.createElement("div");
 			node.style.left = pos[0] + "px";
@@ -186,35 +193,34 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 			particle_container.appendChild(node);
 		}
 
-	function polarToCartesian(angle, length, offset) {
-		var output = [offset[0], offset[1]];
-		var rad = degToRad(angle);
-		output[0] += length * Math.cos(rad);
-		output[1] += length * Math.sin(rad);
-		return output;
-	}
-	function degToRad(deg) {
-		return deg * (Math.PI / 180);
-	}
-
-	function lerp(P, Q, t) {
-		var output = [];
-		if (t < 0) {
-			t = 0;
+		function polarToCartesian(angle, length, offset) {
+			var output = [offset[0], offset[1]];
+			var rad = degToRad(angle);
+			output[0] += length * Math.cos(rad);
+			output[1] += length * Math.sin(rad);
+			return output;
 		}
-		if (t > 1) {
-			t = 1;
+		function degToRad(deg) {
+			return deg * (Math.PI / 180);
 		}
 
-		var i = 0;
-		while (i < P.length) {
-			output.push(P[i] + t * (Q[i] - P[i]));
-			i++;
-		}
-		return output;
-	}
+		function lerp(P, Q, t) {
+			var output = [];
+			if (t < 0) {
+				t = 0;
+			}
+			if (t > 1) {
+				t = 1;
+			}
 
-	
+			var i = 0;
+			while (i < P.length) {
+				output.push(P[i] + t * (Q[i] - P[i]));
+				i++;
+			}
+			return output;
+		}
+
 		// Create each of the particals
 		var max_particles = 100;
 		var max_distance = 300;
@@ -229,8 +235,6 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 			}
 		}, 1000);
 	}
-
-
 </script>
 
 <Modal bind:open={$isPaused} dismissable={false}>
@@ -238,36 +242,35 @@ function particle(creation_tick, start, end, duration, lifespan, velocity) {
 </Modal>
 
 <div class="relative z-0 w-min border-2 border-black border-solid mx-auto">
-	<div
-		class={$isPaused ? "gamegrid relative blur-sm" : "gamegrid relative"}
-	>
+	<div class={$isPaused || $leaderBoardModal ? "gamegrid relative blur-sm" : "gamegrid relative"}>
 		<!-- style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
 		}px;`} -->
 		{#each $gameState.grid as row, rowIndex}
 			{#each row as cell, colIndex}
-				<div class="relative"
-				class:highlighted={colIndex == currentHover.col || rowIndex == currentHover.row}
+				<div
+					class="relative"
+					class:highlighted={colIndex == currentHover.col ||
+						rowIndex == currentHover.row}
 				>
-				<button
-				disabled={$isPaused}
-				class="cell rounded-lg drop-shadow-xl mx-[3px]"
-				style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
-					cell || "transparent"
-				};`}
-					on:click={() => handleTileClick(rowIndex, colIndex)}
-					use:tileEventManager={{ state: cell }}
-					on:explosion={emitExplodePartical}
-					on:mouseenter={() => {
-						currentHover = { row: rowIndex, col: colIndex };
-					}}
-				>
-				</button>
+					<button
+						disabled={$isPaused || $leaderBoardModal}
+						class="cell rounded-lg drop-shadow-xl mx-[3px]"
+						style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
+							cell || "transparent"
+						};`}
+						on:click={() => handleTileClick(rowIndex, colIndex)}
+						use:tileEventManager={{ state: cell }}
+						on:explosion={emitExplodePartical}
+						on:mouseenter={() => {
+							currentHover = { row: rowIndex, col: colIndex };
+						}}
+					>
+					</button>
 				</div>
 			{/each}
 		{/each}
 	</div>
-
 </div>
 
 <style>
