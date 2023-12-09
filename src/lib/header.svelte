@@ -112,7 +112,7 @@
 	</div>
 </nav>
 
-<Modal bind:open={authModal} size="xs" autoclose={false} class="w-full">
+<Modal bind:open={authModal} size="xs" autoclose={false} class="w-full" classBackdrop="z-[100]" classDialog="z-[100]">
 	<Auth />
 </Modal>
 <Modal title="Leaderboard" bind:open={$leaderBoardModal} size="lg" autoclose={false} class="w-full" on:close={() => {
