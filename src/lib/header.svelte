@@ -10,10 +10,13 @@
 
 	import Auth from "./Auth.svelte";
 	import LeaderBoard from "./leaderboard.svelte";
+	import Settings from "./settings.svelte";
 	import { supabase } from "./supabase";
 	import { username, profileImg, email, authState } from "./store/authState";
     import { resetGameState, getGameState, isPaused, endGame } from "./store/gameState";
 	import { leaderBoardModal } from "./store/leaderBoardState";
+	import { settingsModal } from "./store/settingsState";
+	import Leaderboard from "./leaderboard.svelte";
 
 	let authModal = false;
     const gameState = getGameState();
@@ -52,7 +55,7 @@
                 <Button class="w-full p-1" color="red" on:click={() => {
                     endGame()
                 }}
-                disabled={$isPaused || $leaderBoardModal}>
+                disabled={$isPaused || $leaderBoardModal || $settingsModal}>
                     <Label class="text-white">End Game</Label>
                 </Button>
             </div>
@@ -86,12 +89,19 @@
 					</div>
 					<DropdownItem on:click={() => {
 						$leaderBoardModal = true;
+						$settingsModal = false;
 						$isPaused = false;
 					}}
 						>Leader board</DropdownItem
 					>
 					<DropdownItem class="z-[1000]">Solve</DropdownItem>
 					<DropdownItem on:click={resetGameState} class="z-[1000]">Restart</DropdownItem>
+					<DropdownItem on:click={() => {
+						$settingsModal = true;
+						$leaderBoardModal = false;
+						$isPaused = false;
+					}} 
+						>Settings</DropdownItem>
 					{#if $authState.user == null}
 						<DropdownItem
 							slot="footer"
@@ -117,7 +127,17 @@
 </Modal>
 <Modal title="Leaderboard" bind:open={$leaderBoardModal} size="lg" autoclose={false} class="w-full" on:close={() => {
 	$leaderBoardModal = false;
-	$isPaused = true;
+	if (!$settingsModal) {
+		$isPaused = true;
+	}
 }}>
 	<LeaderBoard />
+</Modal>
+<Modal title="Settings" bind:open={$settingsModal} size="lg" autoclose={false} class="w-full" on:close={() => {
+	$settingsModal = false;
+	if (!$leaderBoardModal) {
+		$isPaused = true;
+	}
+}}>
+	<Settings />
 </Modal>
