@@ -13,6 +13,7 @@
 
 	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
 	import { leaderBoardModal } from "./store/leaderBoardState";
+	import { settingsModal } from "./store/settingsState";
 
 	let cellSize = 0;
 	let currentHover = { row: null, col: null };
@@ -242,7 +243,7 @@
 </Modal>
 
 <div class="relative z-0 w-min border-2 border-black border-solid mx-auto">
-	<div class={$isPaused || $leaderBoardModal ? "gamegrid relative blur-sm" : "gamegrid relative"}>
+	<div class={$isPaused || $leaderBoardModal || $settingsModal ? "gamegrid relative blur-sm" : "gamegrid relative"}>
 		<!-- style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
 		}px;`} -->
@@ -254,7 +255,7 @@
 						rowIndex == currentHover.row}
 				>
 					<button
-						disabled={$isPaused || $leaderBoardModal}
+						disabled={$isPaused || $leaderBoardModal || $settingsModal}
 						class="cell rounded-lg drop-shadow-xl mx-[3px]"
 						style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 							cell || "transparent"
