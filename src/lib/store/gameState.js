@@ -123,8 +123,19 @@ export const getGameWon = () => get(GameState).gameWon;
 export const getNumberOfMoves = () => get(GameState).numberOfMoves;
 export const getMetadata = () => get(GameState).metadata;
 
+/**
+ *
+ * @param {"success" | "failure"} sound
+ * @returns void
+ */
 function playSound(sound) {
-	if (sound !== 'success') return;
+	if (sound === 'failure') {
+		let failureSound = new Audio("https://cdn.freesound.org/previews/573/573047_12946586-lq.mp3");
+		failureSound.currentTime = 0.48;
+		failureSound.play();
+		return;
+	}
+
 	let successSound = new Audio("https://cdn.freesound.org/previews/702/702806_6142149-lq.mp3");
 	const combo = getComboMultiplier();
 	successSound.preservesPitch = false;
@@ -173,8 +184,13 @@ export function handleTileClick(row, col) {
 			}
 			return state;
 		});
-		
+		return;
 	}
+	playSound('failure');
+	GameState.update((state) => {
+		state.metadata.timer += 10;
+		return state;
+	});
 }
 
 function checkAndClear(color1, color2) {
@@ -194,7 +210,7 @@ function checkAndClear(color1, color2) {
 			gameState.grid[color2.row][color2.col] = "transparent";
 			gameState.metadata.found += 1;
 			gameState.metadata.traveledDistance += color2.traveled;
-		}	
+		}
 
 		GameState.update((state) => {
 			state.grid = gameState.grid;
