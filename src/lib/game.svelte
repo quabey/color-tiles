@@ -1,21 +1,18 @@
 <script>
 	import { onMount } from "svelte";
 	import NewGame from "./newGame.svelte";
-	import { onGameEnd, supabase } from "./supabase.js";
+
 	import {
 		initGameState,
 		handleTileClick,
-		getGrid,
 		isPaused,
-		endGame,
 	} from "./store/gameState";
-	import { get } from "svelte/store";
 
-	import { Button, Modal, Label, Input, Checkbox } from "flowbite-svelte";
+	import { Modal } from "flowbite-svelte";
 	import { leaderBoardModal } from "./store/leaderBoardState";
+	import { settingsModal } from "./store/settingsState";
 
 	let cellSize = 0;
-	let currentHover = { row: null, col: null };
 
 	let gameState = initGameState();
 
@@ -41,7 +38,6 @@
 	/** @type {import('svelte/action').Action}  */
 	function tileEventManager(node, { state }) {
 		// the node has been mounted in the DOM
-
 		return {
 			update(newValue) {
 				// state has changed
@@ -60,6 +56,7 @@
 						},
 					}),
 				);
+				state = newValue?.state;
 			},
 			destroy() {
 				// the node has been removed from the DOM
@@ -84,13 +81,11 @@
 
 	// Emit destroy partical effect More PARTICAL STUFF
 	async function emitExplodePartical(tileEl) {
-		// console.log("Emitting destroy");
-		console.log(tileEl);
-
 		const particle_container = tileEl.target;
 		particle_container.style.background_color =
 			tileEl.detail.meta_data.newState;
-		const spawn = [tileEl.target.offsetLeft, tileEl.target.offsetTop];
+		const spawn = [50, 50];
+		// [tileEl.target.offsetLeft, tileEl.target.offsetTop];
 
 		var particles = [];
 		var tick = 0;
@@ -155,8 +150,15 @@
 		function drawParticle(pos, age, appearance_params) {
 			//var fragment_node = document.createDocumentFragment();
 			var node = document.createElement("div");
-			node.style.left = pos[0] + "px";
-			node.style.top = pos[1] + "px";
+			node.style.position = "absolute";
+			node.style.zIndex = "5";
+			node.style.left = pos[0] + "%";
+			node.style.top = pos[1] + "%";
+			node.style.width = 3 + "px";
+			node.style.height = 3 + "px";
+			node.style.borderRadius = "50%";
+			node.style.transform = "translate(-50%, -50%)";
+			node.style.backgroundColor = tileEl.detail.meta_data.oldState;
 			var transform_properties = [
 				"translate",
 				"translateX",
@@ -189,7 +191,6 @@
 					);
 				}
 			});
-			// console.log(node);
 			particle_container.appendChild(node);
 		}
 
@@ -225,15 +226,39 @@
 		var max_particles = 100;
 		var max_distance = 300;
 
-		// for (let i = 0; i < max_particles; i++) {
-		// 	createParticle([0, 0], max_distance);
-		// }
-
 		setTimeout(() => {
 			for (let i = 0; i < max_particles; i++) {
 				createParticle(spawn, max_distance);
 			}
-		}, 1000);
+		}, 2500);
+	}
+
+	let gameBoardEl;
+	// Emit grid axis
+	let crossGrid = { row: 0, col: 0 };
+	// Updates the current cross grid axis and emits the event to the tiles
+	async function updateGridAxis(TileEl, select) {
+		crossGrid = select;
+		// Emit Grid axis change
+		// gameBoardEl.target.offsetParent.offsetParent
+		for (let tileEl of gameBoardEl.children) {
+			tileEl.dispatchEvent(
+				new CustomEvent("gridAxis", {
+					detail: {
+						msg: "Tile Update Grid Highlights Axis",
+					},
+				}),
+			);
+		}
+	}
+
+	// Consumer of the grid axis event emitted by the tiles when the grid axis changes
+	function emitGridAxis(tileEl, rowIndex, colIndex) {
+		if (crossGrid.row === rowIndex || crossGrid.col === colIndex) {
+			tileEl.target.style.backgroundColor = "rgb(209, 203, 203)";
+		} else {
+			tileEl.target.style.backgroundColor = "transparent";
+		}
 	}
 </script>
 
@@ -242,7 +267,12 @@
 </Modal>
 
 <div class="relative z-0 w-min border-2 border-black border-solid mx-auto">
-	<div class={$isPaused || $leaderBoardModal ? "gamegrid relative blur-sm" : "gamegrid relative"}>
+	<div
+		class={$isPaused || $leaderBoardModal || $settingsModal
+			? "gamegrid relative blur-sm"
+			: "gamegrid relative"}
+		bind:this={gameBoardEl}
+	>
 		<!-- style={`width: ${23 * cellSize + 22}px; height: ${
 			15 * cellSize + 14
 		}px;`} -->
@@ -250,11 +280,16 @@
 			{#each row as cell, colIndex}
 				<div
 					class="relative"
-					class:highlighted={colIndex == currentHover.col ||
-						rowIndex == currentHover.row}
+					on:gridAxis={function (el) {
+						emitGridAxis(el, rowIndex, colIndex);
+					}}
 				>
+					<!-- class:highlighted={colIndex == currentHover.col ||
+						rowIndex == currentHover.row} -->
 					<button
-						disabled={$isPaused || $leaderBoardModal}
+						disabled={$isPaused ||
+							$leaderBoardModal ||
+							$settingsModal}
 						class="cell rounded-lg drop-shadow-xl mx-[3px]"
 						style={`width: ${cellSize}px; height: ${cellSize}px; background-color: ${
 							cell || "transparent"
@@ -262,8 +297,13 @@
 						on:click={() => handleTileClick(rowIndex, colIndex)}
 						use:tileEventManager={{ state: cell }}
 						on:explosion={emitExplodePartical}
-						on:mouseenter={() => {
-							currentHover = { row: rowIndex, col: colIndex };
+						on:mouseenter={(el) => {
+							// Only show grid axis when its a valid position
+							// if (cell !== "transparent") return;
+							updateGridAxis(el, {
+								row: rowIndex,
+								col: colIndex,
+							});
 						}}
 					>
 					</button>
