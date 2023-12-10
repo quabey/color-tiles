@@ -1,9 +1,9 @@
 <script>
-	import { onDestroy, onMount } from "svelte";
-	import { endGame, getMetadata, isPaused } from "./store/gameState";
+	import { onMount } from "svelte";
+	import { endGame, getGameState, isPaused } from "./store/gameState";
 
 	let duration = 120;
-	let progress = 0;
+	let gameState = getGameState();
 	let increment = 0.5;
 	let interval;
 
@@ -13,14 +13,13 @@
 
 	const countdown = () => {
 		if ($isPaused) return;
-		if (progress < 100) {
-			progress += increment;
+		if ($gameState.metadata.timer < 100) {
+			$gameState.metadata.timer += increment;
 			return;
 		}
 		clearInterval(interval);
 		endGame();
 		interval = newInterval();
-		progress = 0;
 	};
 
 	onMount(() => {
@@ -32,6 +31,6 @@
 <div class="w-full bg-gray-200">
 	<div
 		class="bg-red-700 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-x-full transition-all h-2"
-		style="width: {100 - progress}%;"
+		style="width: {100 - $gameState.metadata.timer}%;"
 	></div>
 </div>
